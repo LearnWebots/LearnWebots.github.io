@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="cpnote">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://example.com/2024/06/10/0-webots_and_opencv_env/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="特别鸣谢  感谢Github ，Hexo ，Redefine ，Webots 和OpenCV !!!  本篇目标  介绍Webots环境和模块，运行Webots自带Sample； 介绍OpenCV环境和模块，运动OpenCV灰度化示例； 创建Webots的C++工程兼容C语言API，并配置链接OpenCV库； 创建VisualArmature，Robot节点及其Camera和Display子节点；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="0 - Webots和OpenCV环境配置">
+<meta property="og:url" content="http://example.com/2024/06/10/0-webots_and_opencv_env/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="特别鸣谢  感谢Github ，Hexo ，Redefine ，Webots 和OpenCV !!!  本篇目标  介绍Webots环境和模块，运行Webots自带Sample； 介绍OpenCV环境和模块，运动OpenCV灰度化示例； 创建Webots的C++工程兼容C语言API，并配置链接OpenCV库； 创建VisualArmature，Robot节点及其Camera和Display子节点；">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/Webot_R2023b.jpg">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/flu-enu.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/network_setting.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/webots_camera.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/opencv.webp">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/cmake_makefile.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/opencv_contrib.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/opencv_make.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/opencv_sample.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/opencv_project.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/project_name.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/world_setting.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/Ibot_UI.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/controller_language.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/controller_name.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/Ibot_controller.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/rectangle_node.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/robot_node.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/camera_node.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/camera_setting.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/display_node.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/VisualArmature_node.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/total_nodes.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/controller_choice.png">
+<meta property="og:image" content="http://example.com/images/webots_and_opencv_env/opencv_project.png">
+<meta property="article:published_time" content="2024-06-10T03:10:14.675Z">
+<meta property="article:modified_time" content="2024-06-10T03:10:00.135Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/webots_and_opencv_env/Webot_R2023b.jpg">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/favicon.png" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.png">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/images/favicon.png">
+    <!--- Page Info-->
+    
+    <title>
+        
+            0 - Webots和OpenCV环境配置 -
+        
+        Learn Webots
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+        <style>
+    :root {
+        --preloader-background-color: #fff;
+        --preloader-text-color: #000;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --preloader-background-color: #202124;
+            --preloader-text-color: #fff;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root {
+            --preloader-background-color: #fff;
+            --preloader-text-color: #000;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .ml13 {
+            font-size: 2.6rem !important; /* Adjust this value as needed */
+        }
+    }
+
+    .preloader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem; /* Tailwind 'gap-4' is 1rem */
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        padding: 12px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* 'h-screen' is 100% of the viewport height */
+        background-color: var(--preloader-background-color);
+        z-index: 1100; /* 'z-[1100]' sets the z-index */
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .ml13 {
+        font-size: 3.2rem;
+        /* text-transform: uppercase; */
+        color: var(--preloader-text-color);
+        letter-spacing: -1px;
+        font-weight: 500;
+        font-family: 'Chillax-Variable', sans-serif;
+        text-align: center;
+    }
+
+    .ml13 .word {
+        display: inline-flex;
+        flex-wrap: wrap;
+        white-space: nowrap;
+    }
+
+    .ml13 .letter {
+        display: inline-block;
+        line-height: 1em;
+    }
+</style>
+
+<div class="preloader">
+    
+<script src="/js/libs/anime.min.js"></script>
+
+    <h1 class="ml13">
+        Learn Webots
+    </h1>
+    <script>
+        var textWrapper = document.querySelector('.ml13');
+        // Split text into words
+        var words = textWrapper.textContent.trim().split(' ');
+
+        // Clear the existing content
+        textWrapper.innerHTML = '';
+
+        // Wrap each word and its letters in spans
+        words.forEach(function(word) {
+            var wordSpan = document.createElement('span');
+            wordSpan.classList.add('word');
+            wordSpan.innerHTML = word.replace(/\S/g, "<span class='letter'>$&</span>");
+            textWrapper.appendChild(wordSpan);
+            textWrapper.appendChild(document.createTextNode(' ')); // Add space between words
+        });
+
+
+        anime.timeline({loop: true})
+            .add({
+                targets: '.ml13 .letter',
+                translateY: [100,0],
+                translateZ: 0,
+                opacity: [0,1],
+                easing: "easeOutExpo",
+                duration: 1400,
+                delay: (el, i) => 300 + 30 * i
+            }).add({
+            targets: '.ml13 .letter',
+            translateY: [0,-100],
+            opacity: [1,0],
+            easing: "easeInExpo",
+            duration: 1200,
+            delay: (el, i) => 100 + 30 * i
+        });
+
+        let themeStatus = JSON.parse(localStorage.getItem('REDEFINE-THEME-STATUS'))?.isDark;
+
+        // If the theme status is not found in local storage, check the preferred color scheme
+        if (themeStatus === undefined || themeStatus === null) {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                themeStatus = 'dark';
+            } else {
+                themeStatus = 'light';
+            }
+        }
+
+        // Now you can use the themeStatus variable in your code
+        if (themeStatus) {
+            document.documentElement.style.setProperty('--preloader-background-color', '#202124');
+            document.documentElement.style.setProperty('--preloader-text-color', '#fff');
+        } else {
+            document.documentElement.style.setProperty('--preloader-background-color', '#fff');
+            document.documentElement.style.setProperty('--preloader-text-color', '#000');
+        }
+
+        window.addEventListener('load', function () {
+            hidePreloaderAfterTimeout(1000); // Hide after 1000 milliseconds once the window has loaded
+        });
+
+        // Backup failsafe: Hide preloader after a maximum of 5000 milliseconds, regardless of the window load event
+        hidePreloaderAfterTimeout(5000);
+
+        function hidePreloaderAfterTimeout(delay) {
+            setTimeout(function () {
+                var preloader = document.querySelector('.preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function () {
+                    preloader.style.display = 'none';
+                }, 200);
+            }, delay);
+        }
+    </script>
+</div>
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/fonts.css">
+
+    
+<link rel="stylesheet" href="/fonts/Satoshi/satoshi.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"example.com","root":"/","language":"en"};
+    window.theme = {"articles":{"style":{"font_size":"18px","line_height":2,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"3.7rem","h2":"3.2rem","h3":"2.8rem","h4":"2.5rem","h5":"2.2rem","h6":"2rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"Learn Webots","subtitle":{"text":[],"hitokoto":{"enable":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.4rem","subtitle_size":"1.5rem","line_height":1.8},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":{"github":null,"instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2022/8/17 11:45:14"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                Learn Webots
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">0</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">0</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">1</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                <div class="w-full flex items-center pt-6 justify-start">
+                    <h1 class="article-title-regular text-second-text-color text-4xl md:text-6xl font-bold px-2 sm:px-6 md:px-8 py-3">0 - Webots和OpenCV环境配置</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/images/avatar.png">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">cpnote</span>
+                        
+                            <span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv1</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2024-06-10 11:10:14</span>
+        <span class="mobile">2024-06-10 11:10:14</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2024-06-10 11:10</span>
+            <span class="mobile">2024-06-10 11:10</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <p><strong>特别鸣谢</strong></p>
+<ul>
+<li>感谢<a class="link"   target="_blank" rel="noopener" href="https://github.com/" >Github <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，<a class="link"   target="_blank" rel="noopener" href="https://hexo.io/" >Hexo <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，<a class="link"   target="_blank" rel="noopener" href="https://redefine.ohevan.com/" >Redefine <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，<a class="link"   target="_blank" rel="noopener" href="https://cyberbotics.com/" >Webots <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>和<a class="link"   target="_blank" rel="noopener" href="https://opencv.org/" >OpenCV <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>!!!</li>
+</ul>
+<p><strong>本篇目标</strong></p>
+<ul>
+<li>介绍Webots环境和模块，运行Webots自带Sample；</li>
+<li>介绍OpenCV环境和模块，运动OpenCV灰度化示例；</li>
+<li>创建Webots的C++工程兼容C语言API，并配置链接OpenCV库；</li>
+<li>创建VisualArmature，Robot节点及其Camera和Display子节点；</li>
+<li>获取VisualArmature在Camera中的图像，利用OpenCV将图像灰度化，并用Display显示OpenCV处理结果。</li>
+</ul>
+<p><strong>涉及设备</strong></p>
+<ul>
+<li><strong>Robot</strong>：基本机器人节点，可包含多个设备子节点，本篇无具体示例结构；</li>
+<li><strong>Camera</strong>：相机设备节点，Robot的子节点，用于获取场景中的图像；</li>
+<li><strong>Display</strong>：显示设备节点，Robot的子节点，用于显示OpenCV处理结果；</li>
+<li><strong>VisualArmature</strong>：广告牌节点，用于显示Webots的Logo，OpenCV的Logo和Apriltag图片。</li>
+</ul>
+<p><strong>软件版本</strong></p>
+<ul>
+<li><strong>Ubuntu版本：22.04</strong></li>
+<li><strong>Webots版本：R2023b</strong></li>
+<li><strong>OpenCV版本：4.8.0</strong></li>
+</ul>
+<p><strong>代码地址</strong></p>
+<ul>
+<li><a class="link"   target="_blank" rel="noopener" href="https://github.com/LearnWebots/LearnWebots" >https://github.com/LearnWebots/LearnWebots <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></li>
+</ul>
+<h2 id="Webots介绍与安装"><a href="#Webots介绍与安装" class="headerlink" title="Webots介绍与安装"></a>Webots介绍与安装</h2><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/Webot_R2023b.jpg"
+                     
+                ></p>
+<h3 id="软件介绍"><a href="#软件介绍" class="headerlink" title="软件介绍"></a>软件介绍</h3><p><a class="link"   target="_blank" rel="noopener" href="https://cyberbotics.com/" >Webots <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>由Cyberbotics公司开发，并于2018年12月由商业变为开源的机器人仿真软件，以Apache 2许可证授权发行，为机器人的建模、编程和仿真提供了完整的开发环境，且拥有丰富的<a class="link"   target="_blank" rel="noopener" href="https://cyberbotics.com/doc/reference/nodes-and-api-functions" >学习手册 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>、<a class="link"   target="_blank" rel="noopener" href="https://cyberbotics.com/doc/guide/tutorials" >学习资源 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>和<a class="link"   target="_blank" rel="noopener" href="https://github.com/cyberbotics/webots" >社区 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>。Webots内核基于开源动力学引擎ODE和OpenGL，可以在Windows，Linux和macOS上运行，并支持机器人操作系统ROS和ROS2，且支持多种编程语言C&#x2F;C++，Python，Java和MATLAB。</p>
+<h3 id="软件安装"><a href="#软件安装" class="headerlink" title="软件安装"></a>软件安装</h3><p>安装在Ubuntu环境下的Webots版本为<a class="link"   target="_blank" rel="noopener" href="https://github.com/cyberbotics/webots/releases/tag/R2023b" >R2023b <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，这里采用的是deb包安装方式，请先下载Webots的<a class="link"   target="_blank" rel="noopener" href="https://github.com/cyberbotics/webots/releases/download/R2023b/webots_2023b_amd64.deb" >deb安装包 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，然后运行如下命令，可以参考Webots提供的<a class="link"   target="_blank" rel="noopener" href="https://cyberbotics.com/doc/guide/installation-procedure?tab-os=windows#installing-the-debian-package-directly" >技术文档 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，</p>
+<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo dpkg -i webots_2023b_amd64.deb</span><br></pre></td></tr></table></figure></div>
+<p>这里需要注意的是在R2022a后Webots对<a class="link"   target="_blank" rel="noopener" href="https://cyberbotics.com/doc/blog/Webots-2022-a-release" >全局坐标系和物体坐标系进行了调整 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，全局坐标系由NUE(N-North-x，U-Up-y，E-East-z)调整为ENU(E-East-x，N-North-y，U-Up-z)，物体坐标系调整为FLU(F-Forward-x，L-Left-y，U-Up-z)，因而当你用R2023b版本运行R2022a之前的示例时需要进行<a class="link"   target="_blank" rel="noopener" href="https://github.com/cyberbotics/webots/wiki/How-to-adapt-your-world-or-PROTO-to-Webots-R2022a" >坐标系调整 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>。<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/flu-enu.png"
+                      alt="flu-enu"
+                ><center>On the left, Webots R2021b, on the right Webots R2022a</center></p>
+<h3 id="安装目录"><a href="#安装目录" class="headerlink" title="安装目录"></a>安装目录</h3><p>安装完成后在安装目录&#x2F;usr&#x2F;local&#x2F;webots下主要包含以下文件夹：bin，docs，include，lib，projects，resources，scripts，src。其中，较为关键的文件夹如下，</p>
+<ul>
+<li><strong>include，src，lib</strong>：开源的源代码，主要包含controller(各种类型的传感器，节点，交互等)，ODE(物理引擎用于碰撞等物理模拟)，Qt6(UI设计，GL显示)和plugins(可以自行扩展)；</li>
+<li><strong>projects，resources</strong>：各种各样的示例工程和资源文件，包含有各种机器人，传感器，物体，场景的模型，其中的<a class="link"   target="_blank" rel="noopener" href="https://www.cyberbotics.com/doc/guide/sample-webots-applications" >samples文件夹 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>中的示例正是需要学习的重点，下面运行的示例以及其他的传感器的示例均位于samples文件夹中的devices&#x2F;worlds目录下。</li>
+</ul>
+<h3 id="运行示例"><a href="#运行示例" class="headerlink" title="运行示例"></a>运行示例</h3><p>安装完成后运行Webots的应用程序，可能会出现Error downloading EXTERNPROTO，需要先设定菜单栏下Tools-&gt;Preferences-&gt;<a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/zwyyy456/p/17479407.html" >Network <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，勾选SOCKS v5，Hostname设定为127.0.0.1，Port设定为7890，如下图所示，<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/network_setting.png"
+                     
+                ><center>Webots设定Network</center><br>再选择菜单栏下的Help-&gt;Webots Guided Tour…，会弹出一个Guided Tour - Webots的对话框，这里就是很多个可以直接运行的Webots示例，在此选择Devices Tour-&gt;camera.wbt就是一个Webots的摄像机示例，有些示例需要通过网络下载等待一定时间，此时再点击工具栏上的播放按钮”▶”就会直接运行这个示例。<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/webots_camera.png"
+                     
+                ><center>Webots示例camera.wbt</center><br>其中，整个运行界面包含菜单栏，工具栏，场景树区，三维显示区，文本编辑区和信息输出区，</p>
+<ul>
+<li><strong>场景树区</strong>：以树状结构的形式来体现场景的构成逻辑，包含有世界节点，场景节点，物体节点，至少一个机器人节点，其中WorldInfo和Viewpoint是最基本的世界节点，涉及到光源，相机，力，交互和仿真参数等渲染引擎需要的基本内容；</li>
+<li><strong>三维显示区</strong>：以虚拟相机的视角来显示场景的三维形貌，可以通过鼠标来缩放，平移，旋转来切换场景的视角，同时也可以调整场景中某个对象的平移和旋转，并显示各类传感器的输出二维图像，如Camera，Display等；</li>
+<li><strong>文本编辑区</strong>：类似于记事本的功能来显示和编辑控制器代码和Makefile文件等；</li>
+<li><strong>信息输出区</strong>：提供程序的输出信息和打印的log信息等。</li>
+</ul>
+<h2 id="OpenCV介绍与安装"><a href="#OpenCV介绍与安装" class="headerlink" title="OpenCV介绍与安装"></a>OpenCV介绍与安装</h2><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/opencv.webp"
+                     
+                ></p>
+<h3 id="软件介绍-1"><a href="#软件介绍-1" class="headerlink" title="软件介绍"></a>软件介绍</h3><p><a class="link"   target="_blank" rel="noopener" href="https://opencv.org/" >OpenCV <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>是一个跨平台的开源计算机视觉库，由英特尔公司发起并参与开发，最初以BSD许可证授权发行，从OpenCV4.5.0开始转为Apache 2许可证，可以在商业和研究领域中免费使用。OpenCV支持多种编程语言接口，包括C++，Python，Java和MATLAB，并且可以在多个操作系统上运行，如Linux，Windows，Android和Mac OS。</p>
+<h3 id="软件安装-1"><a href="#软件安装-1" class="headerlink" title="软件安装"></a>软件安装</h3><p>安装在Ubuntu环境下的OpenCV版本为<a class="link"   target="_blank" rel="noopener" href="https://github.com/opencv/opencv/releases/tag/4.8.0" >4.8.0 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，这里采用源码编译同时会编译<a class="link"   target="_blank" rel="noopener" href="https://github.com/opencv/opencv_contrib/tree/4.8.0" >OpenCV4.8.0的contrib模块 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，具体安装步骤如下所示，</p>
+<ol>
+<li>打开终端，安装相关依赖项，输入以下命令，<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install build-essential</span><br><span class="line">sudo apt-get install cmake cmake-gui git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev</span><br><span class="line">sudo apt-get install python3-dev python3-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-dev</span><br></pre></td></tr></table></figure></div>
+若出现”Unable to locate package libjasper-dev”的问题，输入以下命令解决，<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo add-apt-repository <span class="string">&quot;deb http://security.ubuntu.com/ubuntu xenial-security main&quot;</span></span><br><span class="line">sudo apt update</span><br><span class="line">sudo apt install libjasper1 libjasper-dev</span><br></pre></td></tr></table></figure></div></li>
+<li>克隆OpenCV4.8.0和OpenCV4.8.0的contrib模块的Git仓库，输入以下命令，<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --branch 4.8.0 https://github.com/opencv/opencv.git</span><br><span class="line">git <span class="built_in">clone</span> --branch 4.8.0 https://github.com/opencv/opencv_contrib.git</span><br></pre></td></tr></table></figure></div></li>
+<li>运行应用cmake-gui来配置编译参数，source code选择OpenCV4.8.0的目录&#x2F;home&#x2F;cpnote&#x2F;Webots&#x2F;opencv-4.8.0，build设置为目录&#x2F;home&#x2F;cpnote&#x2F;Webots&#x2F;opencv-4.8.0&#x2F;build，点击Configure按钮并选择yes，此时出现下图界面，选择Unix Makefiles来进行编译，<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/cmake_makefile.png"
+                     
+                ><center>cmake编译界面</center></li>
+<li>编译完成后，需要添加一下OpenCV的contrib模块，即设置OPENCV_EXTRA_MODULES_PATH的路径，如下图所示，并进行再次Configure，并在完成之后，执行Generate，成功后控制台会输出Configuring done和Generating done，<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/opencv_contrib.png"
+                     
+                ><center>OpenCV的contrib模块设置界面</center></li>
+<li>在终端切换到刚刚cmake构建好的的build目录下&#x2F;home&#x2F;cpnote&#x2F;Webots&#x2F;opencv-4.8.0&#x2F;build，运行如下指令，经过较长时间的等待就能实现OpenCV源码的编译，<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo make -j8</span><br></pre></td></tr></table></figure></div>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/opencv_make.png"
+                     
+                ><center>OpenCV的编译界面</center></li>
+<li>运行如下指令，就会将编译好的OpenCV安装到系统中，其中include文件在&#x2F;usr&#x2F;local&#x2F;include目录下，so文件在&#x2F;usr&#x2F;local&#x2F;lib目录下，<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo make install</span><br></pre></td></tr></table></figure></div></li>
+<li>新建opencv.conf文件配置，将OpenCV的库添加到路径，使得系统能够找到其库文件，<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gedit /etc/ld.so.conf.d/opencv.conf</span><br></pre></td></tr></table></figure></div>
+在文件中添加如下路径，<div class="highlight-container" data-rel="Text"><figure class="iseeu highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/lib</span><br></pre></td></tr></table></figure></div>
+执行如下命令使得刚才的配置路径生效，<div class="highlight-container" data-rel="Bash"><figure class="iseeu highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ldconfig</span><br></pre></td></tr></table></figure></div></li>
+</ol>
+<h3 id="安装目录-1"><a href="#安装目录-1" class="headerlink" title="安装目录"></a>安装目录</h3><p>安装完成后在安装目录&#x2F;usr&#x2F;local&#x2F;include&#x2F;opencv4&#x2F;opencv2下主要包含以下关键模块(contrib模块仅介绍aruco)，</p>
+<ul>
+<li><strong>core</strong>：OpenCV的基础模块，提供基本的数据结构和功能，如接触最多的多维数组cv::Mat，用于图像存储和运算；</li>
+<li><strong>imgproc</strong>：图像处理功能模块，用于图像处理和操作等任务，如图像滤波，边缘检测，几何变换等；</li>
+<li><strong>highgui</strong>：图形用户界面模块，用于创建窗口、显示图像、处理鼠标和键盘事件等任务，如使用最多的cv::imshow，用于图像显示；</li>
+<li><strong>calib3d</strong>：相机标定和三维重建模块，用于摄像机标定，位姿求解，立体视觉和三维重建等任务；</li>
+<li><strong>dnn</strong>：深度学习模块，支持使用深度学习模型进行图像处理，如图像分类，目标检测，语义分割等任务；</li>
+<li><strong>feature2d</strong>：特征检测和描述子模块，用于常用的特征点检测和描述子生成任务，包括FAST，ORB，SIFT等特征检测描述和RANSAC特征匹配；</li>
+<li><strong>flann</strong>：快速最近邻搜索模块，提供一种高效的近似最近邻搜索算法，如kd-tree搜索等；</li>
+<li><strong>imgcodes</strong>：图像编解码模块，用于读取、写入和编解码各种图像格式，如PNG，JPEG，BMP等；</li>
+<li><strong>ml</strong>：机器学习模块，用于各种机器学习任务，如SVM分类，Logistic回归，Kmeans聚类等；</li>
+<li><strong>objdetect</strong>: 目标检测模块，用于常见的目标检测算法和预训练的目标检测模型任务，如Haar级联检测器等；</li>
+<li><strong>photo</strong>: 图像编辑模块，用于对图像进行颜色校正、噪声去除、图像增强等任务；</li>
+<li><strong>stitching</strong>: 图像拼接模块，用于将多张图像拼接成全景图像或景深图像，适用于创建全景照片和虚拟现实等应用；</li>
+<li><strong>video</strong>: 视频处理模块，用于视频捕获、读写和处理的任务，包括光流估计、视频稳定等功能；</li>
+<li><strong>videoio</strong>: 视频输入&#x2F;输出模块，用于读取和写入各种视频格式的文件，并提供了与摄像头设备进行交互的功能，如使用较多的cv::VideoCapture；</li>
+<li><strong>aruco</strong>：二维码检测和定位模块，用于棋盘标定和增强现实等功能，如apriltag码检测。</li>
+</ul>
+<h3 id="运行示例-1"><a href="#运行示例-1" class="headerlink" title="运行示例"></a>运行示例</h3><p>安装完成后可以编写一个简单的OpenCV示例，用imread读取一幅彩色图像，用cvtColor将其转为灰度图，并用hconcat和imshow合并显示两幅图像，对应的代码如下，</p>
+<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;opencv2/opencv.hpp&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    cv::Mat color, gray, concat;</span><br><span class="line">    color = cv::<span class="built_in">imread</span>(<span class="string">&quot;/home/cpnote/Webots/OpenCV_Logo.png&quot;</span>);</span><br><span class="line"></span><br><span class="line">    cv::<span class="built_in">cvtColor</span>(color, gray, cv::COLOR_BGR2GRAY);</span><br><span class="line">    cv::<span class="built_in">cvtColor</span>(gray, gray, cv::COLOR_GRAY2BGR);</span><br><span class="line">    cv::<span class="built_in">hconcat</span>(color, gray, concat);</span><br><span class="line"></span><br><span class="line">    cv::<span class="built_in">imshow</span>(<span class="string">&quot;concat&quot;</span>, concat);</span><br><span class="line">    cv::<span class="built_in">waitKey</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/opencv_sample.png"
+                     
+                ><center>OpenCV示例图像灰度化合并显示</center></p>
+<h2 id="Webots工程配置OpenCV"><a href="#Webots工程配置OpenCV" class="headerlink" title="Webots工程配置OpenCV"></a>Webots工程配置OpenCV</h2><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/opencv_project.png"
+                     
+                ></p>
+<h3 id="新建工程"><a href="#新建工程" class="headerlink" title="新建工程"></a>新建工程</h3><ol>
+<li>启动Webots应用程序，选择菜单栏下File-&gt;New-&gt;New Project Directory…来新建工程，并设定目录和工程名为&#x2F;home&#x2F;cpnote&#x2F;Webots&#x2F;Ibot，并选择Next，如下图所示，<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/project_name.png"
+                     
+                ><center>Webots新建工程名</center></li>
+<li>设定世界坐标名称为Ibot，勾选上Add a rectangle arena，并选择Next，如下图所示，<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/world_setting.png"
+                     
+                ><center>Webots世界坐标名</center></li>
+<li>此时可以看到三维显示区由一个方形的地面，如下图所示，那么一个空的工程也就建好了。<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/Ibot_UI.png"
+                     
+                ><center>Webots新建工程显示</center></li>
+</ol>
+<h3 id="新建控制器"><a href="#新建控制器" class="headerlink" title="新建控制器"></a>新建控制器</h3><ol>
+<li>选择菜单栏下File-&gt;New-&gt;New Robot Controller…来新建控制器，并选择C++语言，因为引用的OpenCV是C++语言编写的，并选择Next，如下图所示，<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/controller_language.png"
+                     
+                ><center>Webots新建控制器</center></li>
+<li>设定控制器名称为Ibot，并选择Next，如下图所示，<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/controller_name.png"
+                     
+                ><center>控制器名称设定</center></li>
+<li>此时在Webots右侧的文本编辑区打开Ibot.cpp和Makefile文件，如下图所示，同时能看到控制器和Makefile的初始代码。<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/Ibot_controller.png"
+                     
+                ><center>Webots新建工程显示</center><div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;webots/Robot.hpp&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> webots;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// create the Robot instance.</span></span><br><span class="line">  Robot *robot = <span class="keyword">new</span> <span class="built_in">Robot</span>();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// get the time step of the current world.</span></span><br><span class="line">  <span class="type">int</span> timeStep = (<span class="type">int</span>)robot-&gt;<span class="built_in">getBasicTimeStep</span>();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Main loop:</span></span><br><span class="line">  <span class="keyword">while</span> (robot-&gt;<span class="built_in">step</span>(timeStep) != <span class="number">-1</span>) &#123;</span><br><span class="line"></span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">delete</span> robot;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<div class="highlight-container" data-rel="Makefile"><figure class="iseeu highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">### Do not modify: this includes Webots global Makefile.include</span></span><br><span class="line">null :=</span><br><span class="line">space := <span class="variable">$(null)</span> <span class="variable">$(null)</span></span><br><span class="line">WEBOTS_HOME_PATH?=<span class="variable">$(<span class="built_in">subst</span> <span class="variable">$(space)</span>,\ ,$(<span class="built_in">strip</span> $(<span class="built_in">subst</span> \,/,<span class="variable">$(WEBOTS_HOME)</span>)</span>))</span><br><span class="line"><span class="keyword">include</span> <span class="variable">$(WEBOTS_HOME_PATH)</span>/resources/Makefile.<span class="keyword">include</span></span><br></pre></td></tr></table></figure></div></li>
+</ol>
+<h3 id="工程目录"><a href="#工程目录" class="headerlink" title="工程目录"></a>工程目录</h3><p>新建工程完成后在新建目录&#x2F;home&#x2F;cpnote&#x2F;Webots&#x2F;Ibot下主要包含文件夹controllers，libraries，plugins，protos和worlds。</p>
+<ul>
+<li><strong>controllers</strong>：控制器目录，上节新建的控制器Ibot就在该目录下，包含.cpp文件和Makefile文件；</li>
+<li><strong>libraries</strong>：库目录，自定义或第三方的一些库文件放在该目录下；</li>
+<li><strong>plugins</strong>：插件目录，自定义或第三方的一些插件放在该目录下；</li>
+<li><strong>protos</strong>：扩展节点目录，自定义复杂三维对象及其空间，颜色，物理参数，文件名后缀为.proto，使用VRML(Virtual Reality Modeling Language)语言来描述；</li>
+<li><strong>worlds</strong>：工程文件目录，基本的工程节点描述位于该文件夹下，之前新建的Ibot就在该目录下，对应文件名后缀为.wbt。</li>
+</ul>
+<h3 id="工程示例"><a href="#工程示例" class="headerlink" title="工程示例"></a>工程示例</h3><ol>
+<li>点击位于场景树中的RectangleArena节点的下拉”&gt;”键，修改floorSize为[3 3]，如下如所示，<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/rectangle_node.png"
+                     
+                ><center>设定RobotRectangleArena节点参数</center></li>
+<li>选择场景树区上方工具栏的”+”按钮添加Robot节点，并选择Base Nodes下的Robot节点，如下图所示，<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/robot_node.png"
+                     
+                ><center>添加Robot节点</center></li>
+<li>点击新建的位于场景树中的Robot节点的下拉”&gt;”键，选择其中children子节点，右键选择Add New来添加Camera节点，如下图所示，<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/camera_node.png"
+                     
+                ><center>添加Camera节点</center></li>
+<li>点击新建的位于场景树中的Camera节点的下拉”&gt;”键，修改translation为[-1 0 0.5]，即高度0.5米并向图中后方移动1米，width为640，height为480，即图像分辨率为640*480，fieldOfView为1，即图像fov为弧度1，同时在三维显示区中可以看见一个Camera节点所处位置的三维坐标轴和一个粉色的Camera视图的矩形框，如下图所示，<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/camera_setting.png"
+                     
+                ><center>设定Camera参数</center></li>
+<li>点击新建的位于场景树中的Robot节点的下拉”&gt;”键，选择其中children子节点，右键选择Add New来添加Display节点，用于显示Camera节点获取图像的处理结果，并修改Display的width为640，height为480，即显示分辨率为640*480，如下图所示，<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/display_node.png"
+                     
+                ><center>添加Display节点</center></li>
+<li>选择场景树区上方工具栏的”+”按钮添加三个VisualArmature节点，如下图所示，<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/VisualArmature_node.png"
+                     
+                ><center>添加VisualArmature节点</center></li>
+<li>点击新建的位于场景树中的VisualArmature节点的下拉”&gt;”键，设定三者的dimension为[0.01 0.5 0.5]，修改其中两个的texturesUrl分别为..&#x2F;images&#x2F;opencv_logo.png和..&#x2F;images&#x2F;aruco_0.png，当然这里事先下载和保存了这两张图片在Ibot工程的新建images目录下，勾选菜单栏下View-&gt;Optional Rending-&gt;Show Camera Frustums，即打开相机的视锥体，此时调整三个VisualArmature相对于相机的位置，translation分别为[1 0.25 0.25]，[1 -0.25 0.25]，[1 0 0.75]，同时调整rotation为[0 0 1 3.14]，使得相机能够看到三个VisualArmature的图案，至此所有节点添加完毕，<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/total_nodes.png"
+                     
+                ><center>所有节点显示效果</center></li>
+<li>然而发现Camera和Display都没有显示，那是因为没有给Robot节点添加控制器，并使能Camera和Display的功能，需要设置Robot节点下的controller参数，点击controller并选择Select…按钮，设定为之前新建好的Ibot控制器，如下图所示，<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/controller_choice.png"
+                     
+                ><center>设定Robot节点的控制器</center></li>
+<li>选择文本编辑区上方工具栏的”📁”按钮，打开之前新建的控制器Ibot.cpp和Makefile文件，其中Makefile文件添加以下内容，即<a class="link"   target="_blank" rel="noopener" href="https://cyberbotics.com/doc/guide/using-webots-makefiles#using-webots-c-api-in-a-cpp-controller" >C++兼容C语言的API <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，同时链接之前安装的OpenCV库文件，<div class="highlight-container" data-rel="Makefile"><figure class="iseeu highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">### ---- Webots included libraries ----</span></span><br><span class="line"><span class="comment">### if you want to use the Webots C API in your C++ controller program:</span></span><br><span class="line">USE_C_API = true</span><br><span class="line"></span><br><span class="line"><span class="comment">### ---- Linked libraries ----</span></span><br><span class="line"><span class="comment">### opencv</span></span><br><span class="line">INCLUDE += -I<span class="string">&quot;/usr/local/include/opencv4&quot;</span></span><br><span class="line">LIBRARIES += /usr/local/lib/libopencv*.so</span><br></pre></td></tr></table></figure></div></li>
+<li>修改Ibot.cpp代码如下，并点击文本编辑区上方工具栏的”⚙”按钮来编译代码，<div class="highlight-container" data-rel="C++"><figure class="iseeu highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;opencv2/opencv.hpp&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;webots/robot.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;webots/camera.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;webots/display.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> TIME_STEP 32</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> WbDeviceTag camera, display;</span><br><span class="line">cv::Mat color, gray;</span><br><span class="line"><span class="type">int</span> width, height;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// robot初始化</span></span><br><span class="line">  <span class="built_in">wb_robot_init</span>();</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 获取camera和display设备</span></span><br><span class="line">  camera = <span class="built_in">wb_robot_get_device</span>(<span class="string">&quot;camera&quot;</span>);</span><br><span class="line">  <span class="built_in">wb_camera_enable</span>(camera, TIME_STEP);</span><br><span class="line">  display = <span class="built_in">wb_robot_get_device</span>(<span class="string">&quot;display&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 获取camera的分辨率：宽和高</span></span><br><span class="line">  width = <span class="built_in">wb_camera_get_width</span>(camera);</span><br><span class="line">  height = <span class="built_in">wb_camera_get_height</span>(camera);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 主循环，robot单步运行</span></span><br><span class="line">  <span class="keyword">while</span> (<span class="built_in">wb_robot_step</span>(TIME_STEP) != <span class="number">-1</span>) &#123;</span><br><span class="line">    <span class="comment">// 获取摄像头数据并转为OpenCV的Mat格式</span></span><br><span class="line">    color = cv::<span class="built_in">Mat</span>(height, width, CV_8UC4);</span><br><span class="line">    <span class="type">const</span> <span class="type">unsigned</span> <span class="type">char</span> *data = <span class="built_in">wb_camera_get_image</span>(camera);</span><br><span class="line">    <span class="built_in">memcpy</span>(color.data, data, width * height * <span class="number">4</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 图像灰度化和转为RGBA用于显示</span></span><br><span class="line">    cv::<span class="built_in">cvtColor</span>(color, gray, cv::COLOR_RGBA2GRAY);</span><br><span class="line">    cv::<span class="built_in">cvtColor</span>(gray, gray, cv::COLOR_GRAY2RGBA);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 将OpenCV的Mat转为display可以显示的格式并显示</span></span><br><span class="line">    WbImageRef imr = <span class="built_in">wb_display_image_new</span>(display, gray.cols, gray.rows, gray.data, WB_IMAGE_RGBA);</span><br><span class="line">    <span class="built_in">wb_display_image_paste</span>(display, imr, <span class="number">0</span>, <span class="number">0</span>, <span class="literal">false</span>);</span><br><span class="line">    <span class="built_in">wb_display_image_delete</span>(display, imr);</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// robot释放</span></span><br><span class="line">  <span class="built_in">wb_robot_cleanup</span>();</span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></li>
+<li>编译完成后，点击工具栏上的播放按钮”▶”就会直接运行这个示例，如下图所示，<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/webots_and_opencv_env/opencv_project.png"
+                     
+                ><center>工程示例运行结果</center></li>
+</ol>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><h3 id="函数说明"><a href="#函数说明" class="headerlink" title="函数说明"></a>函数说明</h3><ul>
+<li>wb_robot_init()：C语言API的初始化函数，用于初始化控制器和Webots之间的通信；</li>
+<li>wb_robot_step(TIME_STEP)：C语言API的定期单步调用函数，调用时间间隔为TIME_STEP，单位为ms，一般作为while或for语句使用，用于同步控制器数据和仿真器数据，如各类传感器和执行器；</li>
+<li>wb_robot_cleanup()：C语言API的释放函数，用于关闭控制器和Webots之间的通信，与wb_robot_init()函数成对出现，作用相反；</li>
+<li>wb_robot_get_device(“device_name”)：获取设备函数，返回值为一个设备指针，在使用各类传感器和执行器前，需要获取设备的标签(WbDeviceTag)，传入参数为设备名称的字符串，若未找到该字符串设备，则返回值为0；</li>
+<li>wb_device_enable(‘device_tag’, TIME_STEP)：设备使能函数，使用各类设备前需要使能，同时更新一次设备的时间间隔为TIME_STEP，单位为ms，通常与wb_robot_step的时间间隔一致或是其倍数；</li>
+<li>wb_device_get_parameter’(‘device_tag’)：获取设备数值函数，用于获取设备下各类参数的数值，例如相机的宽高，fov，数据等；</li>
+<li>wb_display_image_new()：display图像新建函数，需要给定图像的宽度，高度，类型和首地址，返回值为WbImageRef；</li>
+<li>wb_display_image_paste()：display图像粘贴函数，将WbImageRef的数据粘贴到Display设备中来显示；</li>
+<li>wb_display_image_delete()：display图像删除函数，通常与wb_display_image_new成对图像，用于释放新建的图像资源；</li>
+<li>cv::Mat(int rows, int cols, int type)：图像或矩阵初始化函数，用于创建宽为cols，高为rows，类型为type的矩阵，典型的三通道彩色图像为CV_8UC3，这里Webots的Camera数据为RGBA，对应为CV_8UC4，即四通道无符号8位图像；</li>
+<li>cv::cvtColor(InputArray src, OutputArray dst, int code, int dstCn&#x3D;0)：图像颜色通道转换函数，code为转换方式，典型的彩色转为灰度图像为cv::COLOR_BGR2GRAY，这里由于Webots的图像数据为RGBA，对应为cv::COLOR_RGBA2GRAY，同时Display的显示图像为WB_IMAGE_RGBA，因而再将灰度图转为RGBA，即cv::COLOR_GRAY2RGBA。</li>
+</ul>
+
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> 0 - Webots和OpenCV环境配置</li>
+        <li><strong>Author:</strong> cpnote</li>
+        <li><strong>Created at
+                :</strong> 2024-06-10 11:10:14</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2024-06-10 11:10:00
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://github.com/LearnWebots/LearnWebots.github.io/2024/06/10/0-webots_and_opencv_env/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+
+        
+
+        
+
+
+        
+            <div class="comment-container px-2 sm:px-6 md:px-8 pb-8">
+                <div class="comments-container mt-10 w-full ">
+    <div id="comment-anchor" class="w-full h-2.5"></div>
+    <div class="comment-area-title w-full my-1.5 md:my-2.5 text-xl md:text-3xl font-bold">
+        Comments
+    </div>
+    
+
+        
+            
+    <div id="waline"></div>
+    <script type="module" data-swup-reload-script>
+      import { init } from '/js/libs/waline.mjs';
+
+      function loadWaline() {
+        init({
+          el: '#waline',
+          serverURL: 'https://example.example.com',
+          lang: 'zh-CN',
+          dark: 'body[class~="dark-mode"]',
+          requiredMeta: ['nick', 'mail'],
+          emoji: [],
+          recaptchaV3Key: "wasd",
+          
+        });
+      }
+
+      if (typeof swup !== 'undefined') {
+        loadWaline();
+      } else {
+        window.addEventListener('DOMContentLoaded', loadWaline);
+      }
+    </script>
+
+
+
+        
+    
+</div>
+
+            </div>
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">0 - Webots和OpenCV环境配置</div>
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Webots%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%AE%89%E8%A3%85"><span class="nav-text">Webots介绍与安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E4%BB%8B%E7%BB%8D"><span class="nav-text">软件介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="nav-text">软件安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E7%9B%AE%E5%BD%95"><span class="nav-text">安装目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E7%A4%BA%E4%BE%8B"><span class="nav-text">运行示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OpenCV%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%AE%89%E8%A3%85"><span class="nav-text">OpenCV介绍与安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E4%BB%8B%E7%BB%8D-1"><span class="nav-text">软件介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-1"><span class="nav-text">软件安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E7%9B%AE%E5%BD%95-1"><span class="nav-text">安装目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E7%A4%BA%E4%BE%8B-1"><span class="nav-text">运行示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Webots%E5%B7%A5%E7%A8%8B%E9%85%8D%E7%BD%AEOpenCV"><span class="nav-text">Webots工程配置OpenCV</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B0%E5%BB%BA%E5%B7%A5%E7%A8%8B"><span class="nav-text">新建工程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B0%E5%BB%BA%E6%8E%A7%E5%88%B6%E5%99%A8"><span class="nav-text">新建控制器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A5%E7%A8%8B%E7%9B%AE%E5%BD%95"><span class="nav-text">工程目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A5%E7%A8%8B%E7%A4%BA%E4%BE%8B"><span class="nav-text">工程示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="nav-text">函数说明</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">cpnote</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        1 posts in total
+                    </span>
+                    
+                </p>
+            
+        </div>
+        
+            <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
+            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
+                
+                    <span id="busuanzi_container_site_uv" class="lg:!block">
+                        <span class="text-sm">VISITOR COUNT</span>
+                        <span id="busuanzi_value_site_uv"></span>
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv" class="lg:!block">
+                        <span class="text-sm">TOTAL PAGE VIEWS</span>
+                        <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.6.1</a></span>
+        </div>
+        
+        
+            <div>
+                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="go-comment">
+                <i class="fa-regular fa-comments"></i>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/runtime.js"></script>
+
+    
+<script src="/js/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>
